@@ -33,8 +33,8 @@ def get_remote(path):
     # It's an absolute URL
     if ":" in path:
         return path
-    
-    url = launch(["git", "remote", "get-url", base_remote])
+
+    url = launch(["git", "config", "--get", "remote.{}.url".format(base_remote)])
     assert(len(url) == 1)
     url = url[0]
 
