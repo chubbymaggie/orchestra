@@ -5,6 +5,6 @@
         {"name": "llvm", "path": "llvm"},
         {"name": "clang", "path": "llvm/tools/clang"},
         {"name": "compiler-rt", "path": "llvm/projects/compiler-rt"},
-        {"name": "qemu", "path": "qemu"},
+        {"name": "qemu", "path": "qemu"}
     ]
 }

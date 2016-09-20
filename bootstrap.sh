@@ -14,6 +14,7 @@ INSTALL_PATH="$SCRIPT_PATH/root"
 BUILD_PATH="$SCRIPT_PATH/build"
 JOBS="$(nproc || echo 1)"
 BRANCH=master
+CLEAN=0
 
 # Parse parameters
 # ----------------
@@ -35,6 +36,10 @@ do
         --jobs)
             shift
             JOBS="$1"
+            shift
+            ;;
+        --clean)
+            CLEAN=1
             shift
             ;;
         --branch)
@@ -200,3 +205,15 @@ EOF
     cd ..
 
 fi
+
+# Cleanup of build directory
+# ==========================
+
+if [ "$CLEAN" -eq 1 ]; then
+    rm -rf llvm
+    rm -rf compiler-rt
+    rm -rf qemu
+    rm -rf revamb-tools
+fi
+
+cd ..
