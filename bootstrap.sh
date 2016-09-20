@@ -165,9 +165,9 @@ else
     export INSTALL_PATH
     export REVAMB_TOOLS="$PWD"
 
-    "$SCRIPT_PATH/revamb-testsuite/x86-64/prepare.sh"
-    "$SCRIPT_PATH/revamb-testsuite/mips/prepare.sh"
-    "$SCRIPT_PATH/revamb-testsuite/arm/prepare.sh"
+    "$SCRIPT_PATH/revamb-tools/x86-64/prepare.sh"
+    "$SCRIPT_PATH/revamb-tools/mips/prepare.sh"
+    "$SCRIPT_PATH/revamb-tools/arm/prepare.sh"
 
     cd ..
 
