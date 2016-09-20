@@ -96,14 +96,14 @@ def main():
 
                 # Check out the request branch
                 if len(args.branch) > 0:
-                    remote_branches = launch(["git", "-C", checkout_path, "branch", "-r"])
+                    remote_branches = launch(["git", "-C", checkout_path, "for-each-ref", "refs/remotes/" + base_remote, "--format", "%(refname)"])
                     matching = filter(lambda name: name.endswith("origin/" + args.branch), remote_branches)
                     if len(matching) == 0:
                         warning("Can't find {} branch for \"{}\"".format(args.branch, checkout_path))
                     elif len(matching) == 1:
                         launch(["git", "-C", checkout_path, "checkout", args.branch])
                     else:
-                        error("More than one branch matching")
+                        error("More than one branch matching: " + str(matching))
 
 if __name__ == "__main__":
     main()
