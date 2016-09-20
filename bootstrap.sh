@@ -13,7 +13,7 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_PATH="$SCRIPT_PATH/root"
 BUILD_PATH="$SCRIPT_PATH/build"
 JOBS="$(nproc || echo 1)"
-BRANCH=master
+BRANCH=develop
 CLEAN=0
 
 # Parse parameters
@@ -48,7 +48,18 @@ do
             shift
             ;;
         *)
-            echo "Usage: $0 [--install-path INSTALL_PATH] [--build-path BUILD_PATH] [--jobs JOBS] [--branch BRANCH]"
+            cat <<EOF
+Usage: $0 [--install-path INSTALL_PATH] [--build-path BUILD_PATH] [--jobs JOBS]
+          [--branch BRANCH] [--clean]
+
+--install-path where to install all the necessary components. Default: "root/".
+--build-path   where to keep all build files. Default: "build/".
+--jobs         the number of parallel jobs for the builds. Default: $JOBS.
+--branch       the branch to use in all the cloned repositories (if available).
+               Default: develop.
+--clean        Remove all the build directories after a successful build, except
+               for revamb. Default: don't clean.
+EOF
             exit 1
             ;;
     esac
