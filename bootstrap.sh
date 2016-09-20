@@ -62,12 +62,6 @@ mkdir -p "$BUILD_PATH"
 
 cd "$BUILD_PATH"
 
-cat > environment <<EOF
-export PATH="$INSTALL_PATH/bin:$PATH"
-export LD_LIBRARY_PATH="$INSTALL_PATH/lib:$LD_LIBRARY_PATH"
-EOF
-source environment
-
 # Build LLVM, clang and compiler-rt
 # ---------------------------------
 
