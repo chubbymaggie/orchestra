@@ -78,8 +78,8 @@ mkdir -p "$BUILD_PATH"
 
 cd "$BUILD_PATH"
 
-# Build LLVM, clang and compiler-rt
-# ---------------------------------
+# Build LLVM and clang
+# --------------------
 
 if [ -d llvm ]; then
     echo "llvm build directory already exists, skipping"
@@ -94,7 +94,6 @@ cmake "$SCRIPT_PATH/llvm" \
       -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
       -DLLVM_EXTERNAL_CLANG_BUILD=N \
       -DBUILD_SHARED_LIBS=ON \
-      -DLLVM_TOOL_COMPILER_RT_BUILD=ON \
       -Wno-dev
 EOF
     bash ../configure-llvm
@@ -117,7 +116,7 @@ else
     cd compiler-rt
 
     cat > ../configure-compiler-rt <<EOF
-cmake "$SCRIPT_PATH/llvm/projects/compiler-rt" \
+cmake "$SCRIPT_PATH/compiler-rt" \
       -DLLVM_CONFIG_PATH="$INSTALL_PATH/bin/llvm-config" \
       -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
       -DCMAKE_C_FLAGS="-mlong-double-64" \
