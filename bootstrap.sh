@@ -201,6 +201,7 @@ else
 
     cat > ../configure-revamb <<EOF
 cmake "$SCRIPT_PATH/revamb" \
+      -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
       -DCMAKE_BUILD_TYPE="Debug" \
       -DQEMU_INSTALL_PATH="$INSTALL_PATH" \
       -DTEST_CFLAGS_x86_64="-msoft-float -mfpmath=387 -mlong-double-64" \
@@ -212,6 +213,7 @@ cmake "$SCRIPT_PATH/revamb" \
 EOF
     bash ../configure-revamb
     make -j"$JOBS"
+    make install
 
     cd ..
 
@@ -225,6 +227,7 @@ if [ "$CLEAN" -eq 1 ]; then
     rm -rf compiler-rt
     rm -rf qemu
     rm -rf revamb-tools
+    rm -rf revamb
 fi
 
 cd ..
