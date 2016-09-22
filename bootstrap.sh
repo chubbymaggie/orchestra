@@ -213,6 +213,7 @@ EOF
     bash ../configure-revamb
     make -j"$JOBS"
     make install
+    ctest -j"$JOBS"
 
     cd ..
 
