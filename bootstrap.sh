@@ -90,6 +90,7 @@ else
     cat > ../configure-llvm <<EOF
 cmake "$SCRIPT_PATH/llvm" \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++" \
       -DLLVM_TARGETS_TO_BUILD="X86" \
       -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
       -DLLVM_EXTERNAL_CLANG_BUILD=N \
@@ -200,6 +201,7 @@ else
 
     cat > ../configure-revamb <<EOF
 cmake "$SCRIPT_PATH/revamb" \
+      -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++" \
       -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
       -DCMAKE_BUILD_TYPE="Debug" \
       -DQEMU_INSTALL_PATH="$INSTALL_PATH" \
