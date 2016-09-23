@@ -198,5 +198,3 @@ make install
 popd >& /dev/null
 
 popd >& /dev/null
-
-refresh_env

@@ -204,5 +204,3 @@ make -j"$JOBS" DESTDIR="$INSTALL_PATH/usr/armv7a-hardfloat-linux-uclibceabi" ins
 popd >& /dev/null
 
 popd >& /dev/null
-
-refresh_env

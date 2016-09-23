@@ -1,13 +1,5 @@
 set -e
 
-function refresh_env {
-    ENVIRONMENT_PATH="$INSTALL_PATH/../environment"
-    (echo "$INSTALL_PATH/bin"; find "$INSTALL_PATH/" -name "*-gcc" -or -name "*-ld" | xargs -n1 dirname ) | sort -u | xargs echo | sed 's| |:|g; s|^|export PATH="|; s|$|:$PATH"|' > "$ENVIRONMENT_PATH"
-    echo "export LD_LIBRARY_PATH=$INSTALL_PATH/lib:\$LD_LIBRARY_PATH" >> "$ENVIRONMENT_PATH"
-    echo "export TOOLS_PATH=$INSTALL_PATH" >> "$ENVIRONMENT_PATH"
-    echo "export DOWNLOAD_PATH=$DOWNLOAD_PATH" >> "$ENVIRONMENT_PATH"
-}
-
 JOBS="${JOBS:-$(( $(nproc) / 2 ))}"
 if [ "$JOBS" -lt 1 ]; then
     JOBS=1
