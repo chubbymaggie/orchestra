@@ -219,15 +219,10 @@ EOF
 
 fi
 
+cd ..
+
 # Cleanup of build directory
 # ==========================
-
 if [ "$CLEAN" -eq 1 ]; then
-    rm -rf llvm
-    rm -rf compiler-rt
-    rm -rf qemu
-    rm -rf revamb-tools
-    rm -rf revamb
+    rm -rf build
 fi
-
-cd ..
