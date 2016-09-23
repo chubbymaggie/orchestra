@@ -29,11 +29,13 @@ Orchestra is known to work on Ubuntu 14.04 and 16.04.
 
 ## How to build
 
+This process will take about 18 GiB and quite some time.
+
 ```
 sudo apt-get install libboost-dev gawk libmpc-dev libmpfr-dev libgmp-dev \
                      texinfo pkg-config zlib1g-dev libglib2.0-dev wget git \
                      cmake build-essential python
-./bootstrap.sh --clean
+./bootstrap.sh
 cd build/revamb
-ctest
+ctest -j$(nproc)
 ```
