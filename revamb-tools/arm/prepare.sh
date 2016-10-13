@@ -123,7 +123,7 @@ if [ ! -e "$NEW_GCC" ]; then
         --with-gxx-include-dir=$INSTALL_PATH/usr/lib/gcc/armv7a-hardfloat-linux-uclibceabi/4.9.3/include/g++-v4 \
         --with-python-dir=/share/gcc-data/armv7a-hardfloat-linux-uclibceabi/4.9.3/python \
         --with-sysroot=$INSTALL_PATH/usr/armv7a-hardfloat-linux-uclibceabi \
-        --enable-languages=c \
+        --enable-languages=c,c++ \
         --enable-obsolete \
         --enable-secureplt \
         --disable-werror \
@@ -131,12 +131,13 @@ if [ ! -e "$NEW_GCC" ]; then
         --enable-nls \
         --without-included-gettext \
         --enable-checking=release \
-        --enable-esp \
+        --enable-libstdcxx-time \
         --enable-poison-system-directories \
         --disable-shared \
         --disable-libatomic \
         --disable-bootstrap \
         --enable-__cxa_atexit \
+        --enable-tls \
         --enable-clocale=gnu \
         --disable-multilib \
         --disable-altivec \
@@ -148,6 +149,8 @@ if [ ! -e "$NEW_GCC" ]; then
         --disable-libmudflap \
         --disable-libssp \
         --disable-libcilkrts \
+        --disable-vtable-verify \
+        --disable-libvtv \
         --disable-libquadmath \
         --enable-lto \
         --without-cloog \

@@ -107,7 +107,7 @@ if [ ! -e "$NEW_GCC" ]; then
         --infodir=$INSTALL_PATH/usr/share/gcc-data/x86_64-gentoo-linux-musl/4.9.3/info \
         --with-gxx-include-dir=$INSTALL_PATH/usr/lib/gcc/x86_64-gentoo-linux-musl/4.9.3/include/g++-v4 \
         --with-sysroot=$INSTALL_PATH/usr/x86_64-gentoo-linux-musl \
-        --enable-languages=c \
+        --enable-languages=c,c++ \
         --enable-obsolete \
         --enable-secureplt \
         --disable-werror \
@@ -115,7 +115,7 @@ if [ ! -e "$NEW_GCC" ]; then
         --enable-nls \
         --without-included-gettext \
         --enable-checking=release \
-        --enable-esp \
+        --enable-libstdcxx-time \
         --enable-poison-system-directories \
         --disable-shared \
         --disable-libatomic \
@@ -130,8 +130,11 @@ if [ ! -e "$NEW_GCC" ]; then
         --disable-libmudflap \
         --disable-libssp \
         --disable-libcilkrts \
+        --disable-vtable-verify \
+        --disable-libvtv \
         --disable-libquadmath \
         --enable-lto \
+        --without-cloog \
         --without-isl \
         --disable-libsanitizer
 

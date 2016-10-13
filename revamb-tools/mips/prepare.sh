@@ -123,7 +123,7 @@ if [ ! -e "$NEW_GCC" ]; then
         --with-gxx-include-dir=$INSTALL_PATH/usr/lib/gcc/mips-unknown-linux-musl/5.3.0/include/g++-v5 \
         --with-python-dir=/share/gcc-data/mips-unknown-linux-musl/5.3.0/python \
         --with-sysroot=$INSTALL_PATH/usr/mips-unknown-linux-musl \
-        --enable-languages=c \
+        --enable-languages=c,c++ \
         --enable-obsolete \
         --enable-secureplt \
         --disable-werror \
@@ -131,6 +131,7 @@ if [ ! -e "$NEW_GCC" ]; then
         --enable-nls \
         --without-included-gettext \
         --enable-checking=release \
+        --enable-libstdcxx-time \
         --enable-poison-system-directories \
         --disable-shared \
         --disable-libatomic \
@@ -144,6 +145,9 @@ if [ ! -e "$NEW_GCC" ]; then
         --disable-libmudflap \
         --disable-libssp \
         --disable-libcilkrts \
+        --disable-libmpx \
+        --disable-vtable-verify \
+        --disable-libvtv \
         --disable-libquadmath \
         --enable-lto \
         --without-isl \
