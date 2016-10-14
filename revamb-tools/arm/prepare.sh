@@ -97,21 +97,7 @@ if [ ! -e "$INSTALL_PATH/usr/armv7a-hardfloat-linux-uclibceabi/usr/include/linux
 fi
 
 NEW_GCC="$INSTALL_PATH/usr/x86_64-pc-linux-gnu/armv7a-hardfloat-linux-uclibceabi/gcc-bin/4.9.3/armv7a-hardfloat-linux-uclibceabi-gcc"
-if [ ! -e "$NEW_GCC" ]; then
-
-    echo "Building ARM gcc"
-
-    GCC_ARCHIVE="gcc-4.9.3.tar.gz"
-    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.3/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-
-    mkdir -p gcc/build
-    pushd gcc >& /dev/null
-
-    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-    cd build
-
-    ../gcc-*/configure \
-        --host=x86_64-pc-linux-gnu \
+GCC_CONFIGURE=$(echo --host=x86_64-pc-linux-gnu \
         --build=x86_64-pc-linux-gnu \
         --target=armv7a-hardfloat-linux-uclibceabi \
         --prefix=$INSTALL_PATH/usr \
@@ -123,7 +109,6 @@ if [ ! -e "$NEW_GCC" ]; then
         --with-gxx-include-dir=$INSTALL_PATH/usr/lib/gcc/armv7a-hardfloat-linux-uclibceabi/4.9.3/include/g++-v4 \
         --with-python-dir=/share/gcc-data/armv7a-hardfloat-linux-uclibceabi/4.9.3/python \
         --with-sysroot=$INSTALL_PATH/usr/armv7a-hardfloat-linux-uclibceabi \
-        --enable-languages=c,c++ \
         --enable-obsolete \
         --enable-secureplt \
         --disable-werror \
@@ -154,7 +139,24 @@ if [ ! -e "$NEW_GCC" ]; then
         --disable-libquadmath \
         --enable-lto \
         --without-cloog \
-        --disable-libsanitizer
+        --disable-libsanitizer)
+
+if [ ! -e "$NEW_GCC" ]; then
+
+    echo "Building ARM gcc"
+
+    GCC_ARCHIVE="gcc-4.9.3.tar.gz"
+    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.3/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    mkdir -p gcc/build
+    pushd gcc >& /dev/null
+
+    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+    cd build
+
+    ../gcc-*/configure \
+        --enable-languages=c \
+        $GCC_CONFIGURE
 
     make -j"$JOBS"
     make install
@@ -205,5 +207,30 @@ pushd "uclibc/build-$CHOSEN_CONFIG" >& /dev/null
 cd uClibc-*
 make -j"$JOBS" DESTDIR="$INSTALL_PATH/usr/armv7a-hardfloat-linux-uclibceabi" install
 popd >& /dev/null
+
+if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/armv7a-hardfloat-linux-uclibceabi/gcc-bin/4.9.3/armv7a-hardfloat-linux-uclibceabi-g++" ]; then
+
+    echo "Building ARM g++"
+
+    GCC_ARCHIVE="gcc-4.9.3.tar.gz"
+    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.3/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    rm -rf gcc/build
+    mkdir -p gcc/build
+    pushd gcc >& /dev/null
+
+    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+    cd build
+
+    CC_FOR_TARGET="$NEW_GCC" ../gcc-*/configure \
+        --enable-languages=c,c++ \
+        $GCC_CONFIGURE
+
+    make -j"$JOBS" CC_FOR_TARGET="$NEW_GCC"
+    make install
+
+    popd >& /dev/null
+
+fi
 
 popd >& /dev/null

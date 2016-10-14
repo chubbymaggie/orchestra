@@ -82,21 +82,7 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/include/stdio.h" ]; th
 fi
 
 NEW_GCC="$INSTALL_PATH/usr/x86_64-pc-linux-gnu/x86_64-gentoo-linux-musl/gcc-bin/4.9.3/x86_64-gentoo-linux-musl-gcc"
-if [ ! -e "$NEW_GCC" ]; then
-
-    echo "Building x84-64 gcc"
-
-    GCC_ARCHIVE="gcc-4.9.3.tar.gz"
-    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.3/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-
-    mkdir -p gcc/build
-    pushd gcc >& /dev/null
-
-    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-    cd build
-
-    ../gcc-*/configure \
-        --host=x86_64-pc-linux-gnu \
+GCC_CONFIGURE=$(echo --host=x86_64-pc-linux-gnu \
         --build=x86_64-pc-linux-gnu \
         --target=x86_64-gentoo-linux-musl \
         --prefix=$INSTALL_PATH/usr \
@@ -107,7 +93,6 @@ if [ ! -e "$NEW_GCC" ]; then
         --infodir=$INSTALL_PATH/usr/share/gcc-data/x86_64-gentoo-linux-musl/4.9.3/info \
         --with-gxx-include-dir=$INSTALL_PATH/usr/lib/gcc/x86_64-gentoo-linux-musl/4.9.3/include/g++-v4 \
         --with-sysroot=$INSTALL_PATH/usr/x86_64-gentoo-linux-musl \
-        --enable-languages=c,c++ \
         --enable-obsolete \
         --enable-secureplt \
         --disable-werror \
@@ -136,7 +121,24 @@ if [ ! -e "$NEW_GCC" ]; then
         --enable-lto \
         --without-cloog \
         --without-isl \
-        --disable-libsanitizer
+        --disable-libsanitizer)
+
+if [ ! -e "$NEW_GCC" ]; then
+
+    echo "Building x84-64 gcc"
+
+    GCC_ARCHIVE="gcc-4.9.3.tar.gz"
+    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.3/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    mkdir -p gcc/build
+    pushd gcc >& /dev/null
+
+    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+    cd build
+
+    ../gcc-*/configure \
+        --enable-languages=c \
+        $GCC_CONFIGURE
 
     make -j"$JOBS" CFLAGS_FOR_TARGET="-mlong-double-64 -O2 -g"
     make install
@@ -217,5 +219,34 @@ pushd "musl/build-$CHOSEN_CONFIG" >& /dev/null
 cd musl-*
 make install
 popd >& /dev/null
+
+if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/x86_64-gentoo-linux-musl/gcc-bin/4.9.3/x86_64-gentoo-linux-musl-g++" ]; then
+
+    echo "Building x84-64 g++"
+
+    GCC_ARCHIVE="gcc-4.9.3.tar.gz"
+    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-4.9.3/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    rm -rf gcc/build
+    mkdir -p gcc/build
+    pushd gcc >& /dev/null
+
+    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+    pushd gcc-*
+    patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
+    popd
+
+    cd build
+
+    CC_FOR_TARGET="$NEW_GCC" ../gcc-*/configure \
+        --enable-languages=c,c++ \
+        $GCC_CONFIGURE
+
+    make -j"$JOBS" CFLAGS_FOR_TARGET="-mlong-double-64 -O2 -g" CC_FOR_TARGET="$NEW_GCC"
+    make install
+
+    popd >& /dev/null
+
+fi
 
 popd >& /dev/null

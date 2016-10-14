@@ -97,21 +97,7 @@ if [ ! -e "$INSTALL_PATH/usr/mips-unknown-linux-musl/usr/include/asm/unistd.h" ]
 fi
 
 NEW_GCC="$INSTALL_PATH/usr/x86_64-pc-linux-gnu/mips-unknown-linux-musl/gcc-bin/5.3.0/mips-unknown-linux-musl-gcc"
-if [ ! -e "$NEW_GCC" ]; then
-
-    echo "Building MIPS gcc"
-
-    GCC_ARCHIVE="gcc-5.3.0.tar.gz"
-    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-5.3.0/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-
-    mkdir -p gcc/build
-    pushd gcc >& /dev/null
-
-    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-    cd build
-
-    ../gcc-*/configure \
-        --host=x86_64-pc-linux-gnu \
+GCC_CONFIGURE=$(echo --host=x86_64-pc-linux-gnu \
         --build=x86_64-pc-linux-gnu \
         --target=mips-unknown-linux-musl \
         --prefix=$INSTALL_PATH/usr \
@@ -123,7 +109,6 @@ if [ ! -e "$NEW_GCC" ]; then
         --with-gxx-include-dir=$INSTALL_PATH/usr/lib/gcc/mips-unknown-linux-musl/5.3.0/include/g++-v5 \
         --with-python-dir=/share/gcc-data/mips-unknown-linux-musl/5.3.0/python \
         --with-sysroot=$INSTALL_PATH/usr/mips-unknown-linux-musl \
-        --enable-languages=c,c++ \
         --enable-obsolete \
         --enable-secureplt \
         --disable-werror \
@@ -151,7 +136,24 @@ if [ ! -e "$NEW_GCC" ]; then
         --disable-libquadmath \
         --enable-lto \
         --without-isl \
-        --disable-libsanitizer
+        --disable-libsanitizer)
+
+if [ ! -e "$NEW_GCC" ]; then
+
+    echo "Building MIPS gcc"
+
+    GCC_ARCHIVE="gcc-5.3.0.tar.gz"
+    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-5.3.0/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    mkdir -p gcc/build
+    pushd gcc >& /dev/null
+
+    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+    cd build
+
+    ../gcc-*/configure \
+        --enable-languages=c \
+        $GCC_CONFIGURE
 
     make -j"$JOBS"
     make install
@@ -200,5 +202,33 @@ pushd "musl/build-$CHOSEN_CONFIG" >& /dev/null
 cd musl-*
 make install
 popd >& /dev/null
+
+if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/mips-unknown-linux-musl/gcc-bin/5.3.0/mips-unknown-linux-musl-g++" ]; then
+
+    echo "Building MIPS g++"
+
+    GCC_ARCHIVE="gcc-5.3.0.tar.gz"
+    [ ! -e "$DOWNLOAD_PATH/$GCC_ARCHIVE" ] && wget "https://ftp.gnu.org/gnu/gcc/gcc-5.3.0/$GCC_ARCHIVE" -O "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    rm -rf gcc/build
+    mkdir -p gcc/build
+    pushd gcc >& /dev/null
+
+    tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+    pushd gcc-*
+    patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
+    popd
+    cd build
+
+    CC_FOR_TARGET="$NEW_GCC" ../gcc-*/configure \
+        --enable-languages=c,c++ \
+        $GCC_CONFIGURE
+
+    make -j"$JOBS" CC_FOR_TARGET="$NEW_GCC"
+    make install
+
+    popd >& /dev/null
+
+fi
 
 popd >& /dev/null
