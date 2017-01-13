@@ -228,5 +228,5 @@ cd ..
 # Cleanup of build directory
 # ==========================
 if [ "$CLEAN" -eq 1 ]; then
-    rm -rf build
+    rm -rf build/
 fi

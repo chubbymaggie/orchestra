@@ -81,6 +81,20 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/include/stdio.h" ]; th
 
 fi
 
+if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/include/asm/unistd.h" ]; then
+    LINUX_ARCHIVE=linux-4.5.2.tar.xz
+    [ ! -e "$DOWNLOAD_PATH/$LINUX_ARCHIVE" ] && wget "https://cdn.kernel.org/pub/linux/kernel/v4.x/$LINUX_ARCHIVE" -O "$DOWNLOAD_PATH/$LINUX_ARCHIVE"
+
+    mkdir -p linux-headers
+    pushd linux-headers >& /dev/null
+    tar xaf "$DOWNLOAD_PATH/$LINUX_ARCHIVE"
+
+    cd linux-*
+    make ARCH=x86_64 INSTALL_HDR_PATH="$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr" headers_install
+
+    popd >& /dev/null
+fi
+
 NEW_GCC="$INSTALL_PATH/usr/x86_64-pc-linux-gnu/x86_64-gentoo-linux-musl/gcc-bin/4.9.3/x86_64-gentoo-linux-musl-gcc"
 GCC_CONFIGURE=$(echo --host=x86_64-pc-linux-gnu \
         --build=x86_64-pc-linux-gnu \
