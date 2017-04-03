@@ -162,32 +162,9 @@ if [ ! -e "$NEW_GCC" ]; then
 fi
 
 COMPILER_RT_BUILTINS="$INSTALL_PATH/lib/linux/libclang_rt.builtins-x86_64.a"
-if [ \( ! -z "$GIT_BASE_URL" \) -a \( ! -e "$COMPILER_RT_BUILTINS" \) ]; then
-
-    echo "Building x86-64 compiler-rt"
-
-    mkdir -p compiler-rt
-    pushd compiler-rt >& /dev/null
-
-    [ ! -d source ] && git clone "$GIT_BASE_URL/compiler-rt.git" "source"
-
-    mkdir -p build
-    cd build
-
-    cmake ../source \
-        -DLLVM_CONFIG_PATH="$INSTALL_PATH/bin/llvm-config" \
-        -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
-        -DCMAKE_C_FLAGS="-mlong-double-64" \
-        -DCMAKE_CXX_FLAGS="-mlong-double-64" \
-        -DCOMPILER_RT_DEFAULT_TARGET_TRIPLE=x86_64-gentoo-linux \
-        -DCMAKE_BUILD_TYPE=Debug \
-        -DCAN_TARGET_i386=False \
-        -DCAN_TARGET_i686=False
-
-    make -j"$JOBS"
-    make install
-    popd >& /dev/null
-
+if [ ! -e "$COMPILER_RT_BUILTINS" ]; then
+    echo "Couldn't find libclang_rt.builtins-x86_64.a"
+    false
 fi
 
 if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/lib/libc.a" ]; then
