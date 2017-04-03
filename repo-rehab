@@ -24,7 +24,7 @@ def error(msg):
     sys.exit(1)
 
 def launch(argv):
-    return subprocess.check_output(argv).strip().split("\n")
+    return subprocess.check_output(argv).decode("ascii").strip().split("\n")
 
 cwd = None
 base_remote = None
@@ -97,7 +97,7 @@ def main():
                 # Check out the request branch
                 if len(args.branch) > 0:
                     remote_branches = launch(["git", "-C", checkout_path, "for-each-ref", "refs/remotes/" + base_remote, "--format", "%(refname)"])
-                    matching = filter(lambda name: name.endswith("origin/" + args.branch), remote_branches)
+                    matching = list(filter(lambda name: name.endswith("origin/" + args.branch), remote_branches))
                     if len(matching) == 0:
                         warning("Can't find {} branch for \"{}\"".format(args.branch, checkout_path))
                     elif len(matching) == 1:
