@@ -180,6 +180,7 @@ if [ ! -e "$INSTALL_PATH/usr/mips-unknown-linux-musl/usr/lib/libc.a" ]; then
         tar xaf "$DOWNLOAD_PATH/$MUSL_ARCHIVE"
 
         cd musl-*
+        patch -p1 < "$SCRIPT_PATH/musl-printf-floating-point-rounding.patch"
         CC="$NEW_GCC" \
           CFLAGS="$FLAGS" \
           ../musl-*/configure \

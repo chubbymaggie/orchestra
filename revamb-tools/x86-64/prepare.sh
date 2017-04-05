@@ -185,6 +185,7 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/lib/libc.a" ]; then
         tar xaf "$DOWNLOAD_PATH/$MUSL_ARCHIVE"
 
         cd musl-*
+        patch -p1 < "$SCRIPT_PATH/musl-printf-floating-point-rounding.patch"
         cp arch/{arm,x86_64}/bits/float.h
 
         CC="$NEW_GCC" \
