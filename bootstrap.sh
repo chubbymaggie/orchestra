@@ -157,7 +157,8 @@ else
     --disable-kvm \
     --without-pixman \
     --disable-tools \
-    --disable-system
+    --disable-system \
+    --python=$(which python2)
 EOF
     bash ../configure-qemu
 
