@@ -123,7 +123,7 @@ cmake "$SCRIPT_PATH/compiler-rt" \
       -DCMAKE_C_FLAGS="-mlong-double-64" \
       -DCMAKE_CXX_FLAGS="-mlong-double-64" \
       -DCOMPILER_RT_DEFAULT_TARGET_TRIPLE=x86_64-gentoo-linux \
-      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_BUILD_TYPE=Release \
       -DCAN_TARGET_i386=False \
       -DCAN_TARGET_i686=False
 EOF
