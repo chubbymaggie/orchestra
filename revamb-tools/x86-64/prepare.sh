@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_PATH/../init.sh"
 cd "$REVAMB_TOOLS"
@@ -148,6 +150,11 @@ if [ ! -e "$NEW_GCC" ]; then
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+    popd
+
     cd build
 
     ../gcc-*/configure \
@@ -224,8 +231,10 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/x86_64-gentoo-linux-musl/gcc-bi
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-    pushd gcc-*
-    patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+      patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
     popd
 
     cd build
