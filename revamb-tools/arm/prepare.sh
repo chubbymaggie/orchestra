@@ -152,6 +152,11 @@ if [ ! -e "$NEW_GCC" ]; then
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+    popd
+
     cd build
 
     ../gcc-*/configure \
@@ -220,6 +225,11 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/armv7a-hardfloat-linux-uclibcea
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+    popd
+
     cd build
 
     CC_FOR_TARGET="$NEW_GCC" ../gcc-*/configure \

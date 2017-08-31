@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_PATH/../init.sh"
 cd "$REVAMB_TOOLS"
@@ -148,6 +150,11 @@ if [ ! -e "$NEW_GCC" ]; then
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+    popd
+
     cd build
 
     ../gcc-*/configure \
@@ -162,32 +169,9 @@ if [ ! -e "$NEW_GCC" ]; then
 fi
 
 COMPILER_RT_BUILTINS="$INSTALL_PATH/lib/linux/libclang_rt.builtins-x86_64.a"
-if [ \( ! -z "$GIT_BASE_URL" \) -a \( ! -e "$COMPILER_RT_BUILTINS" \) ]; then
-
-    echo "Building x86-64 compiler-rt"
-
-    mkdir -p compiler-rt
-    pushd compiler-rt >& /dev/null
-
-    [ ! -d source ] && git clone "$GIT_BASE_URL/compiler-rt.git" "source"
-
-    mkdir -p build
-    cd build
-
-    cmake ../source \
-        -DLLVM_CONFIG_PATH="$INSTALL_PATH/bin/llvm-config" \
-        -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
-        -DCMAKE_C_FLAGS="-mlong-double-64" \
-        -DCMAKE_CXX_FLAGS="-mlong-double-64" \
-        -DCOMPILER_RT_DEFAULT_TARGET_TRIPLE=x86_64-gentoo-linux \
-        -DCMAKE_BUILD_TYPE=Debug \
-        -DCAN_TARGET_i386=False \
-        -DCAN_TARGET_i686=False
-
-    make -j"$JOBS"
-    make install
-    popd >& /dev/null
-
+if [ ! -e "$COMPILER_RT_BUILTINS" ]; then
+    echo "Couldn't find libclang_rt.builtins-x86_64.a"
+    false
 fi
 
 if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/lib/libc.a" ]; then
@@ -208,6 +192,7 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/usr/lib/libc.a" ]; then
         tar xaf "$DOWNLOAD_PATH/$MUSL_ARCHIVE"
 
         cd musl-*
+        patch -p1 < "$SCRIPT_PATH/musl-printf-floating-point-rounding.patch"
         cp arch/{arm,x86_64}/bits/float.h
 
         CC="$NEW_GCC" \
@@ -246,8 +231,10 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/x86_64-gentoo-linux-musl/gcc-bi
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-    pushd gcc-*
-    patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+      patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
     popd
 
     cd build

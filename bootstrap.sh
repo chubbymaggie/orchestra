@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 set -e
 
 # Variables initialization
@@ -124,7 +123,7 @@ cmake "$SCRIPT_PATH/compiler-rt" \
       -DCMAKE_C_FLAGS="-mlong-double-64" \
       -DCMAKE_CXX_FLAGS="-mlong-double-64" \
       -DCOMPILER_RT_DEFAULT_TARGET_TRIPLE=x86_64-gentoo-linux \
-      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_BUILD_TYPE=Release \
       -DCAN_TARGET_i386=False \
       -DCAN_TARGET_i686=False
 EOF
@@ -158,7 +157,8 @@ else
     --disable-kvm \
     --without-pixman \
     --disable-tools \
-    --disable-system
+    --disable-system \
+    --python=$(which python2)
 EOF
     bash ../configure-qemu
 
@@ -190,6 +190,16 @@ else
 
 fi
 
+if [ ! -e "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/lib/libclang_rt.builtins-x86_64.a" ]; then
+
+    # Create a link to libclang_rt.builtins.a in path that is in the default
+    # library search path so that -lclang_rt.builtins-x86_64 can be used without
+    # specifying the full path
+    ln -s "../../../lib/linux/libclang_rt.builtins-x86_64.a" \
+       "$INSTALL_PATH/usr/x86_64-gentoo-linux-musl/lib/"
+
+fi
+
 # Build revamb
 # ------------
 
@@ -208,7 +218,7 @@ cmake "$SCRIPT_PATH/revamb" \
       -DCMAKE_BUILD_TYPE="Debug" \
       -DQEMU_INSTALL_PATH="$INSTALL_PATH" \
       -DTEST_CFLAGS_x86_64="-msoft-float -mfpmath=387 -mlong-double-64" \
-      -DTEST_LINK_LIBRARIES_x86_64="-lc $INSTALL_PATH/lib/linux/libclang_rt.builtins-x86_64.a" \
+      -DTEST_LINK_LIBRARIES_x86_64="-lc -lclang_rt.builtins-x86_64" \
       -DLLVM_DIR="$INSTALL_PATH/share/llvm/cmake" \
       -DC_COMPILER_x86_64="$INSTALL_PATH/usr/x86_64-pc-linux-gnu/x86_64-gentoo-linux-musl/gcc-bin/4.9.3/x86_64-gentoo-linux-musl-gcc" \
       -DC_COMPILER_mips="$INSTALL_PATH/usr/x86_64-pc-linux-gnu/mips-unknown-linux-musl/gcc-bin/5.3.0/mips-unknown-linux-musl-gcc" \

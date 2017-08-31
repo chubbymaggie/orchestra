@@ -149,6 +149,11 @@ if [ ! -e "$NEW_GCC" ]; then
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+    popd
+
     cd build
 
     ../gcc-*/configure \
@@ -180,6 +185,7 @@ if [ ! -e "$INSTALL_PATH/usr/mips-unknown-linux-musl/usr/lib/libc.a" ]; then
         tar xaf "$DOWNLOAD_PATH/$MUSL_ARCHIVE"
 
         cd musl-*
+        patch -p1 < "$SCRIPT_PATH/musl-printf-floating-point-rounding.patch"
         CC="$NEW_GCC" \
           CFLAGS="$FLAGS" \
           ../musl-*/configure \
@@ -215,9 +221,12 @@ if [ ! -e "$INSTALL_PATH/usr/x86_64-pc-linux-gnu/mips-unknown-linux-musl/gcc-bin
     pushd gcc >& /dev/null
 
     tar xaf "$DOWNLOAD_PATH/$GCC_ARCHIVE"
-    pushd gcc-*
-    patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
+
+    pushd gcc-*/
+      patch -p1 < "$SCRIPT_PATH/cfns-fix-mismatch-in-gnu_inline-attributes.patch"
+      patch -p1 < "$SCRIPT_PATH/cpp-musl-support.patch"
     popd
+
     cd build
 
     CC_FOR_TARGET="$NEW_GCC" ../gcc-*/configure \
